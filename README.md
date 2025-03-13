@@ -1,13 +1,16 @@
 # training-machine-learning-mac-sources
-This is a repository to collect links/knowledge on the state of training on modern Macs, since the information is currently spread widely around the web, and it's difficult to get code running. The focus is currently on getting stable diffusion training setups working, but a lot of the information is probably general enough to be useful outside that.
+This is a repository to collect links/knowledge on the state of training on modern Macs, since the information is currently spread widely around the web, and it's difficult to get code running. The focus is currently on getting higher-level stable diffusion training setups working, but a lot of the information is general enough to be useful outside that.
 
 # Orientation
 
 ### MPS
-Most ML projects out there at the moment rely on PyTorch, which originally only supported Nvidia GPUs via CUDA, but in late 2022 an additional backend was introduced called MPS which supports running on M-series Mac GPUs. (https://pytorch.org/docs/stable/notes/mps.html). This backend supports a lot of operations, but some remain unsupported. [MPS](https://developer.apple.com/documentation/metalperformanceshaders) is essentially CUDA for Mac GPUs.
+Most ML projects out there at the moment rely on PyTorch, which originally only supported Nvidia GPUs via CUDA, but in late 2022 an additional backend was introduced called MPS which supports running on M-series Mac GPUs. (https://pytorch.org/docs/stable/notes/mps.html). This backend supports a lot of operations, but some remain unsupported. [MPS](https://developer.apple.com/documentation/metalperformanceshaders) is essentially CUDA for Mac GPUs. When this document refers to "MPS", it generally means the `mps` backend for PyTorch.
 
 ### MLX
 [MLX](https://github.com/ml-explore/mlx) is a separate framework from PyTorch that leverages the GPU on Macs as well. Most projects use PyTorch with MPS currently rather than MPX, but you can find some MLX examples [here](https://github.com/ml-explore/mlx-examples).
+
+### Architecture
+M-series Macs use the `arm64` architecture.
 
 # Useful system libraries
 
@@ -65,15 +68,15 @@ Be careful setting this value too high as it could cause system instability if y
 - You can definitely install the `xformers` package, but I've seen conflicting information on whether Mac is supported/working or not. Might be worth disabling it where possible (e.g. `use_memory_efficient_attention` to false in `AUTOMATIC1111`, cross_attention to `none` in `kohya_ss`, etc.)
 
 ### Floating Point support
-- Often to save on memory, it's useful to use smaller sized floating-point numbers in training/inference. Currently, 
- Avoid `fp8` and other lower precisions
-- `fp64`/`float64` -  Not currently support in MPS
+- Often to save on memory, it's useful to use smaller sized floating-point numbers in training/inference. Currently, the `mps` backend has limited support for other sizes of floating point, and might either not work or convert to `fp32`, negating savings.
+- `fp64`/`float64` -  Not currently support in MPS ([relevant issue on another repo](https://github.com/huggingface/transformers/issues/28334))
 - `fp32`/`float32` - Supported, and the default in MPS
-- 
+- `fp16`/`float16` - Looks like not supported? ([issue](https://github.com/pytorch/pytorch/issues/96113))
+- `fp8`/`float8` - Not supported ([GitHub issue](https://github.com/pytorch/pytorch/issues/132624))
 
 
 
 # Information sources/threads
 - [Metal FlashAttention](https://github.com/philipturner/metal-flash-attention)
 - [Installing OpenMP on OSX](https://gist.github.com/ijleesw/4f863543a50294e3ba54acf588a4a421)
-- [Getting xformers working on M-series macs](https://github.com/AUTOMATIC1111/stable-diffusion-webui/discussions/8188), 
+- [Getting xformers working on M-series macs](https://github.com/AUTOMATIC1111/stable-diffusion-webui/discussions/8188)

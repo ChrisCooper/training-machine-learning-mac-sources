@@ -1,13 +1,17 @@
-# training-ML-mac-sources
-This is a repository to collect links/knowledge on the state of training on modern Macs, since the information is currently spread widely around the web, and it's difficult to get code running.
+# training-machine-learning-mac-sources
+This is a repository to collect links/knowledge on the state of training on modern Macs, since the information is currently spread widely around the web, and it's difficult to get code running. The focus is currently on getting stable diffusion training setups working, but a lot of the information is probably general enough to be useful outside that.
 
 # Orientation
 
-Most ML projects out there at the moment rely on PyTorch, which originally only supported NVidia GPUs via CUDA, but in late 2022 an additional backend was introduced called MPS which supports running on M-series Mac GPUs. (https://pytorch.org/docs/stable/notes/mps.html). This backend supports a lot of operations, but some remain unsupported.
+### MPS
+Most ML projects out there at the moment rely on PyTorch, which originally only supported Nvidia GPUs via CUDA, but in late 2022 an additional backend was introduced called MPS which supports running on M-series Mac GPUs. (https://pytorch.org/docs/stable/notes/mps.html). This backend supports a lot of operations, but some remain unsupported. [MPS](https://developer.apple.com/documentation/metalperformanceshaders) is essentially CUDA for Mac GPUs.
+
+### MLX
+[MLX](https://github.com/ml-explore/mlx) is a separate framework from PyTorch that leverages the GPU on Macs as well. Most projects use PyTorch with MPS currently rather than MPX, but you can find some MLX examples [here](https://github.com/ml-explore/mlx-examples).
 
 # Useful system libraries
 
-You should probably install these for supporting various utilities related to training. This guide assumes you have installed [Homebrew](https://brew.sh/) for managing packages. If you don't have it or don't want to use it, you can install these dependencies manually.
+You should probably install these for supporting various utilities related to training. This guide assumes you have installed [Homebrew](https://brew.sh/) for managing packages. If you don't have it or don't want to use it, you can install these dependencies manually. Consult licenses to undestand how you can use these.
 
 ### LLVM
 - Contains a buch of components that suport compilers
@@ -24,10 +28,6 @@ export CPPFLAGS="-I/opt/homebrew/opt/llvm/include"
 
 If these conflict with your existing projects, you can instead add these lines to a script you can run with `source llvm_env.sh` to enable for particular projects when needed.
 
-### Image libraries
-- These are used by `torchvision` and other image utilities like `Pillow`
-- Run `brew install jpeg libpng`
-
 ### OpenMP
 - Supports running shared-memory multi-core operations
 - Run `brew install libomp`
@@ -37,7 +37,18 @@ export LDFLAGS="-L/opt/homebrew/opt/libomp/lib"
 export CPPFLAGS="-I/opt/homebrew/opt/libomp/include"
 ```
 
+### Image libraries
+- These are used by `torchvision` and other image utilities like `Pillow`
+- Run `brew install jpeg libpng`
+
+### FFmpeg
+- Supports operations on video and audio files and streams
+- Run `brew install ffmpeg`
+
 # General tips
+
+### pyenv
+This is subjective and not Mac-specific, but [pyenv](https://github.com/pyenv/pyenv) can help a lot with managing/experimenting with different versions of python. E.g. if you are working in a directory with a project that requires Python 3.12, simply run `pyenv local 3.12` and you can immediately use that version for that project only.
 
 ### Increasing available VRAM
 You can increase the limit of memory that can be used for training/inference with the following:
@@ -50,9 +61,16 @@ sudo sysctl iogpu.wired_limit_mb=57344
 ```
 Be careful setting this value too high as it could cause system instability if you push it.  More info [here](https://www.reddit.com/r/LocalLLaMA/comments/186phti/m1m2m3_increase_vram_allocation_with_sudo_sysctl/).
 
-
 ### Disable `xformers`?
 - You can definitely install the `xformers` package, but I've seen conflicting information on whether Mac is supported/working or not. Might be worth disabling it where possible (e.g. `use_memory_efficient_attention` to false in `AUTOMATIC1111`, cross_attention to `none` in `kohya_ss`, etc.)
+
+### Floating Point support
+- Often to save on memory, it's useful to use smaller sized floating-point numbers in training/inference. Currently, 
+ Avoid `fp8` and other lower precisions
+- `fp64`/`float64` -  Not currently support in MPS
+- `fp32`/`float32` - Supported, and the default in MPS
+- 
+
 
 
 # Information sources/threads

@@ -53,6 +53,12 @@ export CPPFLAGS="-I/opt/homebrew/opt/libomp/include"
 ### pyenv
 This is subjective and not Mac-specific, but [pyenv](https://github.com/pyenv/pyenv) can help a lot with managing/experimenting with different versions of python. E.g. if you are working in a directory with a project that requires Python 3.12, simply run `pyenv local 3.12` and you can immediately use that version for that project only.
 
+### CPU fallback
+- You can example this env variable in case an operation isn't supported with the MPS backed:
+```
+export PYTORCH_ENABLE_MPS_FALLBACK=1
+```
+
 ### Increasing available VRAM
 You can increase the limit of memory that can be used for training/inference with the following:
 ```
@@ -74,9 +80,13 @@ Be careful setting this value too high as it could cause system instability if y
 - `fp16`/`float16` - Looks like not supported? ([issue](https://github.com/pytorch/pytorch/issues/96113))
 - `fp8`/`float8` - Not supported ([GitHub issue](https://github.com/pytorch/pytorch/issues/132624))
 
+This applies in a lot of places, e.g. use `AdamW` instead of `AdamW8bit`.
 
 
 # Information sources/threads
 - [Metal FlashAttention](https://github.com/philipturner/metal-flash-attention)
 - [Installing OpenMP on OSX](https://gist.github.com/ijleesw/4f863543a50294e3ba54acf588a4a421)
 - [Getting xformers working on M-series macs](https://github.com/AUTOMATIC1111/stable-diffusion-webui/discussions/8188)
+- [kohya_ss Mac fixes](https://github.com/bmaltais/kohya_ss/pull/2830)
+- [kohya_ss Mac fixes part 2](https://github.com/bmaltais/kohya_ss/issues/2805#issuecomment-2349652539)
+- [General thread on Stable Diffusion on Mac](https://www.reddit.com/r/StableDiffusion/comments/1fazrrl/comment/lm2qmge/)

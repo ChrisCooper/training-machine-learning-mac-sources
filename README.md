@@ -1,5 +1,5 @@
 # training-machine-learning-mac-sources
-This is a repository to collect links/knowledge on the state of training on modern Macs, since the information is currently spread widely around the web, and it's difficult to get code running. The focus is currently on getting higher-level stable diffusion training setups working, but a lot of the information is general enough to be useful outside that.
+This is a repository to collect links/knowledge on the state of training/fine-tuning on M-series Macs, since the information is currently spread widely around the web, and it's difficult to get code running. The focus is currently on getting higher-level stable diffusion training setups working, but a lot of the information is general enough to be useful outside that.
 
 # Orientation
 
